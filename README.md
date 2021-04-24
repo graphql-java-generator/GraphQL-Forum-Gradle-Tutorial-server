@@ -1,4 +1,4 @@
-# A tutorial for the GraphQL Gradle plugin (server side)
+# A tutorial for the GraphQL Maven plugin (server side)
 
 
 This Tutorial describes how-to create a GraphQL server, with the [graphql-maven-plugin](https://github.com/graphql-java-generator/graphql-maven-plugin-project) and the [graphql Gradle plugin](https://github.com/graphql-java-generator/graphql-gradle-plugin-project).
@@ -86,8 +86,7 @@ Let's first have a look at the Maven **pom.xml** file:
 					</customScalars>
 					<!-- The parameters below change the 1.x default behavior to respect 
 						the future 2.x behavior -->
-					<copyRuntimeSources>false</copyRuntimeSources>
-					<generateDeprecatedRequestResponse>false</generateDeprecatedRequestResponse>
+					<generateBatchLoaderEnvironment>true</generateBatchLoaderEnvironment>
 					<separateUtilityClasses>true</separateUtilityClasses>
 				</configuration>
 			</plugin>
@@ -99,8 +98,9 @@ Let's first have a look at the Maven **pom.xml** file:
 		<!-- Dependencies for GraphQL -->
 		<dependency>
 			<groupId>com.graphql-java-generator</groupId>
-			<artifactId>graphql-java-runtime</artifactId>
+			<artifactId>graphql-java-server-dependencies</artifactId>
 			<version>${graphql-maven-plugin.version}</version>
+			<type>pom</type>
 		</dependency>
 
 		<!-- Add of the graphiql interface, to test your GraphQL server -->
@@ -121,7 +121,7 @@ Then the Gradle **build.gradle** file:
 
 ```Groovy
 plugins {
-	id "com.graphql_java_generator.graphql-gradle-plugin" version "1.11"
+	id "com.graphql_java_generator.graphql-gradle-plugin" version "1.14.1"
 	id 'java'
 }
 
@@ -133,24 +133,30 @@ repositories {
 dependencies {
 	// The graphql-java-runtime module agregates all dependencies for the generated code, including the plugin runtime
 	// CAUTION: this version should be exactly the same as the graphql-gradle-plugin's version
-	implementation "com.graphql-java-generator:graphql-java-runtime:1.11"
-	//implementation "org.apache.logging.log4j:log4j-slf4j-impl:2.12.1"
-	runtime 'com.graphql-java-kickstart:graphiql-spring-boot-starter:6.0.1'
+	implementation 'com.graphql-java-generator:graphql-java-server-dependencies:1.14.1'
+	implementation 'com.github.dozermapper:dozer-core:6.5.0'
+	implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
+	
+	// The Spring Boot version should be the same as the Spring Boot version of the graphql-gradle-plugin
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa:2.4.4')
+	
+	runtimeOnly 'com.graphql-java-kickstart:graphiql-spring-boot-starter:6.0.1'
+	runtimeOnly 'com.h2database:h2:1.4.200'
 }
 
 // The line below makes the GraphQL plugin be executed before Java compiles, so that all sources are generated on time
 compileJava.dependsOn generateServerCode
 
 // The line below adds the generated sources as a java source folder
-sourceSets.main.java.srcDirs += '/build/generated/generateServerCode'
+sourceSets.main.java.srcDirs += '/build/generated/graphql-maven-plugin'
 
 // Let's configure the GraphQL Gradle Plugin:
 // All available parameters are described here: 
 // https://graphql-maven-plugin-project.graphql-java-generator.com/graphql-maven-plugin/generateServerCode-mojo.html
 generateServerCodeConf {
-	mode = "server"  //This line is here only for the demo, as client is the default mode
 	packageName = 'org.forum.server'
-	packageName = 'org.forum.server.graphql'
+	packageName = 'org.forum.server.graphql'	
+	generateBatchLoaderEnvironment = true
 	scanBasePackages = 'org.forum.server.impl, org.forum.server.jpa'
 	customScalars = [ [
 			graphQLTypeName: "Date",
@@ -158,9 +164,8 @@ generateServerCodeConf {
 			graphQLScalarTypeStaticField: "com.graphql_java_generator.customscalars.GraphQLScalarTypeDate.Date"
 	] ]
 
-	// The parameters below change the 1.x default behavior to respect the future 2.x behavior
-	copyRuntimeSources = false
-	generateDeprecatedRequestResponse = false
+	// The parameters below change the 1.x default behavior. They are set to respect the behavior of the future 2.x versions
+	//generateBatchLoaderEnvironment = true
 	separateUtilityClasses = true
 }
 ```
@@ -185,7 +190,7 @@ The generated source is added to the IDE sources, thanks to:
 * (for Maven) The _build-helper-maven-plugin_, so that the generated source is automatically added to the build path of your IDE.
 * (for Gradle) The _sourceSets.main.java.srcDirs += ..._ line
 
-The _graphql-java-runtime_ dependency add all necessary dependencies, for the generated code. Of course, its version must be the same as the plugin's version.
+The _graphql-java-server-dependencies_ dependency provides all the necessary dependencies, for the generated code. Of course, __its version must be the same as the plugin's version__.
 
 The [graphiql-spring-boot-starter](https://github.com/graphql-java-kickstart/graphql-spring-boot) adds a web GUI that allows to easily test your GraphQL server. It's very useful for testing. And it should of course be removed for production. This generate a web page that allow to execute GraphQL request. This page will be available [on the /graphiql path](http://localhost:8180/graphiql) of the server, once it is started.
 
@@ -203,6 +208,7 @@ The code is generated in the :
 * (for Gradle) _/build/generated-sources/generateServerCode_ folder. And thanks to the  _sourceSets.main.java.srcDirs += ..._ line in the _build.gradle_ file, it should automatically be added as a source folder to your favorite IDE.
 
 Let's take a look at the generated code:
+* The __com.graphql_java_generator__ package and its sub-packages are the necessary runtime for the generated plugin.
 * The __org.forum.server.graphql__ package contains all classes that maps to the GraphQL schema:
     * The classes starting by '__' (two underscores) are the GraphQL introspection classes. These are standard GraphQL types.
     * All other classes are directly the items defined in the forum GraphQL schema, with their fields, getter and setter. All fields are annotated with the GraphQL information necessary on runtime, and the JSON annotations to allow the deserialization of the server response.
@@ -658,7 +664,7 @@ To do that, the GraphQL framework will execute:
 * The _boards_ Query Data Fetcher that we have already implemented
 * The _topics()_ Data Fetcher, of the _Board_ Data Fetcher Delegate for each found _Board_
 
-We also implement the _batchLoader()_ which will be explained in the next paragraph.
+We also implement the _batchLoader()_ method which will be explained in the next paragraph.
 
 ```Java
 @Component
@@ -686,7 +692,7 @@ public class DataFetchersDelegateBoardImpl implements DataFetchersDelegateBoard 
 	}
 
 	@Override
-	public List<Board> batchLoader(List<UUID> keys) {
+	public List<Board> batchLoader(List<UUID> keys, BatchLoaderEnvironment env) {
 		Iterable<BoardEntity> boards = boardRepository.findAllById(keys);
 		return util.mapList(boards, BoardEntity.class, Board.class);
 	}
@@ -811,7 +817,7 @@ public class DataFetchersDelegateTopicImpl implements DataFetchersDelegateTopic 
 	}
 
 	@Override
-	public List<Topic> batchLoader(List<UUID> keys) {
+	public List<Topic> batchLoader(List<UUID> keys, BatchLoaderEnvironment env) {
 		Iterable<TopicEntity> topics = topicRepository.findAllById(keys);
 		return util.mapList(topics, TopicEntity.class, Topic.class);
 	}
@@ -833,7 +839,7 @@ public class DataFetchersDelegateMemberImpl implements DataFetchersDelegateMembe
 	private MemberRepository memberRepository;
 
 	@Override
-	public List<Member> batchLoader(List<UUID> keys) {
+	public List<Member> batchLoader(List<UUID> keys, BatchLoaderEnvironment env) {
 		Iterable<MemberEntity> members = memberRepository.findAllById(keys);
 		return util.mapList(members, MemberEntity.class, Member.class);
 	}
@@ -875,7 +881,7 @@ public class DataFetchersDelegatePostImpl implements DataFetchersDelegatePost {
 	}
 
 	@Override
-	public List<Post> batchLoader(List<UUID> keys) {
+	public List<Post> batchLoader(List<UUID> keys, BatchLoaderEnvironment env) {
 		Iterable<PostEntity> topics = postRepository.findAllById(keys);
 		return util.mapList(topics, PostEntity.class, Post.class);
 	}
