@@ -1,6 +1,7 @@
 plugins {
-	id "com.graphql_java_generator.graphql-gradle-plugin" version "1.14.1"
+	id "com.graphql_java_generator.graphql-gradle-plugin" version "${graphQLpluginVersion}"
 	id 'java'
+	id "org.springframework.boot" version "2.4.4"
 }
 
 repositories {
@@ -11,7 +12,7 @@ repositories {
 dependencies {
 	// The graphql-java-runtime module agregates all dependencies for the generated code, including the plugin runtime
 	// CAUTION: this version should be exactly the same as the graphql-gradle-plugin's version
-	implementation 'com.graphql-java-generator:graphql-java-server-dependencies:1.14.1'
+	implementation "com.graphql-java-generator:graphql-java-server-dependencies:${graphQLpluginVersion}"
 	implementation 'com.github.dozermapper:dozer-core:6.5.0'
 	implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
 	
@@ -25,8 +26,8 @@ dependencies {
 // The line below makes the GraphQL plugin be executed before Java compiles, so that all sources are generated on time
 compileJava.dependsOn generateServerCode
 
-// The line below adds the generated sources as a java source folder
-sourceSets.main.java.srcDirs += '/build/generated/graphql-maven-plugin'
+// The line below adds the generated sources as a java source folder in the IDE
+sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlGradlePlugin'
 
 // Let's configure the GraphQL Gradle Plugin:
 // All available parameters are described here: 
