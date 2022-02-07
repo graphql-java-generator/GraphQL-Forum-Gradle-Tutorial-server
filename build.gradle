@@ -12,7 +12,7 @@ repositories {
 dependencies {
 	// The graphql-java-runtime module agregates all dependencies for the generated code, including the plugin runtime
 	// CAUTION: this version should be exactly the same as the graphql-gradle-plugin's version
-	implementation "com.graphql-java-generator:graphql-java-server-dependencies:${graphQLRuntimeVersion}"
+	implementation "com.graphql-java-generator:graphql-java-server-dependencies:${graphQLPluginVersion}"
 	implementation 'com.github.dozermapper:dozer-core:6.5.0'
 	implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
 	
@@ -33,7 +33,6 @@ sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlGradlePlugin'
 // All available parameters are described here: 
 // https://graphql-maven-plugin-project.graphql-java-generator.com/graphql-maven-plugin/generateServerCode-mojo.html
 generateServerCodeConf {
-	packageName = 'org.forum.server'
 	packageName = 'org.forum.server.graphql'	
 	generateBatchLoaderEnvironment = true
 	scanBasePackages = 'org.forum.server.impl, org.forum.server.jpa'
