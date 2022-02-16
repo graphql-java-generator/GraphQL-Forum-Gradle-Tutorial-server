@@ -20,7 +20,7 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa:2.4.4')
 	
 	runtimeOnly 'com.graphql-java-kickstart:graphiql-spring-boot-starter:6.0.1'
-	runtimeOnly 'com.h2database:h2:1.4.200'
+	runtimeOnly 'com.h2database:h2:2.1.210'
 }
 
 // The line below makes the GraphQL plugin be executed before Java compiles, so that all sources are generated on time
