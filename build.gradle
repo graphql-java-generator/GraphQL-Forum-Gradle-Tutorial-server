@@ -5,14 +5,14 @@ plugins {
 }
 
 repositories {
-	jcenter()
+	mavenLocal()
 	mavenCentral()
 }
 
 dependencies {
 	// The graphql-java-runtime module agregates all dependencies for the generated code, including the plugin runtime
 	// CAUTION: this version should be exactly the same as the graphql-gradle-plugin's version
-	implementation "com.graphql-java-generator:graphql-java-server-dependencies:${graphQLPluginVersion}"
+	implementation "com.graphql-java-generator:graphql-java-server-runtime:${graphQLPluginVersion}"
 	implementation 'com.github.dozermapper:dozer-core:6.5.0'
 	implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
 	
@@ -23,9 +23,6 @@ dependencies {
 	runtimeOnly 'com.h2database:h2:2.1.210'
 }
 
-// The line below makes the GraphQL plugin be executed before Java compiles, so that all sources are generated on time
-compileJava.dependsOn generateServerCode
-
 // The line below adds the generated sources as a java source folder in the IDE
 sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlGradlePlugin'
 
@@ -34,7 +31,6 @@ sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlGradlePlugin'
 // https://graphql-maven-plugin-project.graphql-java-generator.com/graphql-maven-plugin/generateServerCode-mojo.html
 generateServerCodeConf {
 	packageName = 'org.forum.server.graphql'	
-	generateBatchLoaderEnvironment = true
 	scanBasePackages = 'org.forum.server.impl, org.forum.server.jpa'
 	customScalars = [ [
 			graphQLTypeName: "Date",
@@ -43,7 +39,8 @@ generateServerCodeConf {
 	] ]
 
 	// The parameters below change the 1.x default behavior. They are set to respect the behavior of the future 2.x versions
-	//generateBatchLoaderEnvironment = true
+	copyRuntimeSources = false
+	generateBatchLoaderEnvironment = true
 	separateUtilityClasses = true
 }
 
