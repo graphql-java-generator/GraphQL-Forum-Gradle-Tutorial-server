@@ -1,6 +1,6 @@
 package org.forum.server.impl;
 
-import javax.annotation.Resource;
+import javax.security.auth.Subject;
 
 import org.forum.server.graphql.Post;
 import org.forum.server.graphql.util.DataFetchersDelegateSubscription;
@@ -10,10 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
-import io.reactivex.subjects.Subject;
+import javax.annotation.Resource;
 
 @Component
-public class DataFetchersDelegateSubscriptionImpl implements DataFetchersDelegateSubscription {
+public class DataFetchersDelegateSubscriptionTypeImpl implements DataFetchersDelegateSubscription {
 
 	/** The logger for this instance */
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -18,7 +18,7 @@ import com.github.dozermapper.core.Mapper;
 import graphql.schema.DataFetchingEnvironment;
 
 @Component
-public class DataFetchersDelegateQueryImpl implements DataFetchersDelegateQuery {
+public class DataFetchersDelegateQueryTypeImpl implements DataFetchersDelegateQuery {
 
 	@Resource
 	private BoardRepository boardRepository;

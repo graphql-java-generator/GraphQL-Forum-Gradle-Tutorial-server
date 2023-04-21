@@ -1,8 +1,11 @@
 plugins {
-	id "com.graphql_java_generator.graphql-gradle-plugin" version "${graphQLPluginVersion}"
+	// CAUTION !    The id of the plugin has changed since 2.0RC1.
+	// It was 'com.graphql_java_generator.graphql-gradle-plugin'. It is now 'com.graphql-java-generator.graphql-gradle-plugin'
+	id "com.graphql-java-generator.graphql-gradle-plugin" version "${graphQLPluginVersion}"
 	id 'java'
-	id "org.springframework.boot" version "2.4.4"
+	id "org.springframework.boot" version "${springBootVersion}"
 }
+sourceCompatibility = '17'
 
 repositories {
 	mavenLocal()
@@ -13,18 +16,18 @@ dependencies {
 	// The graphql-java-runtime module agregates all dependencies for the generated code, including the plugin runtime
 	// CAUTION: this version should be exactly the same as the graphql-gradle-plugin's version
 	implementation "com.graphql-java-generator:graphql-java-server-runtime:${graphQLPluginVersion}"
-	implementation 'com.github.dozermapper:dozer-core:6.5.0'
-	implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
+	implementation 'com.github.dozermapper:dozer-core:6.5.2'
 	
 	// The Spring Boot version should be the same as the Spring Boot version of the graphql-gradle-plugin
-	implementation('org.springframework.boot:spring-boot-starter-data-jpa:2.4.4')
-	
-	runtimeOnly 'com.graphql-java-kickstart:graphiql-spring-boot-starter:6.0.1'
-	runtimeOnly 'com.h2database:h2:2.1.210'
+	implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+	implementation "org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}"
+
+	runtimeOnly 'com.h2database:h2:2.1.214'
 }
 
 // The line below adds the generated sources as a java source folder in the IDE
 sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlGradlePlugin'
+sourceSets.main.resources.srcDirs += '/build/generated/resources/graphqlGradlePlugin'
 
 // Let's configure the GraphQL Gradle Plugin:
 // All available parameters are described here: 
@@ -32,13 +35,14 @@ sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlGradlePlugin'
 generateServerCodeConf {
 	packageName = 'org.forum.server.graphql'	
 	scanBasePackages = 'org.forum.server.impl, org.forum.server.jpa'
+	schemaPersonalizationFile = 'src/main/graphql/forum_personalization.json'
 	customScalars = [ [
 			graphQLTypeName: "Date",
 			javaType: "java.util.Date",
 			graphQLScalarTypeStaticField: "com.graphql_java_generator.customscalars.GraphQLScalarTypeDate.Date"
 	] ]
 
-	// The parameters below change the 1.x default behavior. They are set to respect the behavior of the future 2.x versions
+	// The parameters below are mandatory for 2.0RC1. These parameters will disappear in 2.0, and these values will be forced
 	copyRuntimeSources = false
 	generateBatchLoaderEnvironment = true
 	separateUtilityClasses = true
