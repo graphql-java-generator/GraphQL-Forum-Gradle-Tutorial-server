@@ -10,7 +10,7 @@ import org.forum.server.jpa.MemberEntity;
 import org.forum.server.jpa.repositories.MemberRepository;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateMemberImpl implements DataFetchersDelegateMember {

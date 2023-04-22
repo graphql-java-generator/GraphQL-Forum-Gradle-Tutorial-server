@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 import com.github.dozermapper.core.Mapper;
 
 import graphql.schema.DataFetchingEnvironment;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateMutationImpl implements DataFetchersDelegateMutation {

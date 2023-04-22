@@ -1,9 +1,10 @@
+
 plugins {
-	// CAUTION !    The id of the plugin has changed since 2.0RC1.
-	// It was 'com.graphql_java_generator.graphql-gradle-plugin'. It is now 'com.graphql-java-generator.graphql-gradle-plugin'
-	id "com.graphql-java-generator.graphql-gradle-plugin" version "${graphQLPluginVersion}"
 	id 'java'
-	id "org.springframework.boot" version "${springBootVersion}"
+	// id 'application'
+	id 'com.graphql-java-generator.graphql-gradle-plugin' version "${graphQLPluginVersion}"
+	id 'org.springframework.boot' version "${springBootVersion}"
+	id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
 }
 sourceCompatibility = '17'
 
@@ -17,15 +18,15 @@ dependencies {
 	// CAUTION: this version should be exactly the same as the graphql-gradle-plugin's version
 	implementation "com.graphql-java-generator:graphql-java-server-runtime:${graphQLPluginVersion}"
 	implementation 'com.github.dozermapper:dozer-core:6.5.2'
-	
-	// The Spring Boot version should be the same as the Spring Boot version of the graphql-gradle-plugin
-	implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
-	implementation "org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}"
 
-	runtimeOnly 'com.h2database:h2:2.1.214'
+	// Then, the dependencies that are specific to this project
+	implementation "org.springframework.boot:spring-boot-starter-websocket"  // Mandatory to activate the web sockets (mandatory for subscription)
+	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+	
+	runtimeOnly "com.h2database:h2"
 }
 
-// The line below adds the generated sources as a java source folder in the IDE
+// The line below adds the generated sources as a java source folder, in the IDE
 sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlGradlePlugin'
 sourceSets.main.resources.srcDirs += '/build/generated/resources/graphqlGradlePlugin'
 
@@ -36,6 +37,7 @@ generateServerCodeConf {
 	packageName = 'org.forum.server.graphql'	
 	scanBasePackages = 'org.forum.server.impl, org.forum.server.jpa'
 	schemaPersonalizationFile = 'src/main/graphql/forum_personalization.json'
+	useJakartaEE9 = true
 	customScalars = [ [
 			graphQLTypeName: "Date",
 			javaType: "java.util.Date",
@@ -47,5 +49,3 @@ generateServerCodeConf {
 	generateBatchLoaderEnvironment = true
 	separateUtilityClasses = true
 }
-
-	

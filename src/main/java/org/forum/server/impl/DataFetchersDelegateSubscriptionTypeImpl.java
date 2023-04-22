@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateSubscriptionTypeImpl implements DataFetchersDelegateSubscription {

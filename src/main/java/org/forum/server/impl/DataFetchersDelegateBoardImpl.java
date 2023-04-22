@@ -15,7 +15,7 @@ import org.forum.server.jpa.repositories.TopicRepository;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetchingEnvironment;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 @Component
 public class DataFetchersDelegateBoardImpl implements DataFetchersDelegateBoard {

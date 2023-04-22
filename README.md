@@ -436,7 +436,7 @@ You can then reuse these beans anywhere, by declaring them as a dependency in a 
 
 ```Java
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import com.github.dozermapper.core.Mapper;
 
 @Component
@@ -574,7 +574,7 @@ package org.forum.server.impl;
 
 import java.util.List;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.forum.server.graphql.Board;
 import org.forum.server.graphql.Topic;
@@ -1160,7 +1160,7 @@ Now, the ReactiveX Subject receives each newly created post. We wire the GraphQL
 ```Java
 package org.forum.server.impl;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.forum.server.graphql.Post;
 import org.forum.server.graphql.util.DataFetchersDelegateSubscription;
