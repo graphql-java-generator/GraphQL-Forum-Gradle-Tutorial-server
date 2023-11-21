@@ -16,7 +16,7 @@ repositories {
 dependencies {
 	// The graphql-java-runtime module agregates all dependencies for the generated code, including the plugin runtime
 	// CAUTION: this version should be exactly the same as the graphql-gradle-plugin's version
-	implementation "com.graphql-java-generator:graphql-java-server-runtime:${graphQLPluginDependencies}"
+	implementation "com.graphql-java-generator:graphql-java-server-runtime:${graphQLPluginVersion}"
 	implementation 'com.github.dozermapper:dozer-core:6.5.2'
 
 	// Then, the dependencies that are specific to this project
