@@ -50,7 +50,7 @@ Let's first have a look at the Maven **pom.xml** file:
 ```XML
 
 	<properties>
-		<graphql-maven-plugin.version>1.18.6</graphql-maven-plugin.version>
+		<graphql-maven-plugin.version>2.4</graphql-maven-plugin.version>
 	</properties>
 
 	<build>
@@ -128,7 +128,7 @@ Let's first have a look at the Maven **pom.xml** file:
 Define once the plugin version in the **build.properties** file:
 
 ```Groovy
-graphQLPluginVersion = 1.18.6
+graphQLPluginVersion = 2.4
 ```
 Then the Gradle **build.gradle** file:
 
@@ -227,14 +227,12 @@ Let's take a look at the generated code:
     * The classes starting by '__' (two underscores) are the GraphQL introspection classes. These are standard GraphQL types.
     * All other classes are directly the items defined in the forum GraphQL schema, with their fields, getter and setter. All fields are annotated with the GraphQL information necessary on runtime, and the JSON annotations to allow the deserialization of the server response.
 * The __org.forum.server.graphql.util__ package contains:
-    * _BatchLoaderDelegateXxxxImpl_ classes are utility classes that manages the data loader for you.
-    * _DataFetchersDelegateXxx_ interfaces: these interfaces contain all method that indicates to the server how to retrieve the data. You'll have to implement these interfaces  
-    * _GraphQLDataFetchers_ is a technical class that declares every Data Fetcher to the graphql-java framework
-    * _GraphQLProvider_ declares all GraphQL components to the graphql-java framework
+    * _XxxController_ classes are the spring controllers that is called by spring-graphql to fetch data. These controllers call the relevant Data Fetcher Delegates that you'll implement.
+    * _DataFetchersDelegateXxx_ interfaces: these interfaces contain all method that indicates to the server how to retrieve the data. You'll have to implement these interfaces (see below)
     * _GraphQLServerMain_ is the main entry point of the server. The application is a regular Spring Boot application or war, and you'll find lots of information on the net on how to configure such an app (and see below)
         * If the packaging is _jar_ (like in this tutorial), it contains the _main_ method that allow the produced jar to start as a java application
         * If the packaging is _war_, it inherits from _SpringBootServletInitializer_, allowing the module to be loaded as war webapp.
-    * _WebSocketXxx_ are utility classes to manage Web Sockets. Web Sockets are the way to receive the notification back from a subscription.  
+    * _GraphQLWiring_ is the technical class that maps the custom scalars to their java implementation, as specified in your pom.xml or gradle.build file
 
 
 To sum up, you'll use:
