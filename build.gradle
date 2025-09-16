@@ -8,14 +8,13 @@ buildscript {
 
 
 plugins {
-	id 'java'
 	// CAUTION !    The id of the plugin has changed since 2.0RC1.
-	// It was 'com.graphql_java_generator.graphql-gradle-plugin'. It is now 'com.graphql-java-generator.graphql-gradle-plugin'
+	// It was 'com.graphql_java_generator.graphql-gradle-plugin'. It is now 'com.graphql-java-generator.graphql-gradle-plugin3'
 	id 'com.graphql-java-generator.graphql-gradle-plugin3' version "${graphQLPluginVersion}"
+	id 'java'
 	id 'org.springframework.boot' version "${springBootVersion}"
-	id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
+	id 'io.spring.dependency-management' version "${springDependencyManagementPluginVersion}"
 }
-sourceCompatibility = '17'
 
 repositories {
 	mavenLocal()
@@ -26,13 +25,19 @@ dependencies {
 	// The graphql-java-runtime module agregates all dependencies for the generated code, including the plugin runtime
 	// CAUTION: this version should be exactly the same as the graphql-gradle-plugin's version
 	implementation "com.graphql-java-generator:graphql-java-server-runtime:${graphQLPluginVersion}"
-	implementation 'com.github.dozermapper:dozer-core:6.5.2'
+	implementation "com.github.dozermapper:dozer-core:${dozerVersion}"
 
 	// Then, the dependencies that are specific to this project
 	implementation "org.springframework.boot:spring-boot-starter-websocket"  // Mandatory to activate the web sockets (mandatory for subscription)
 	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 	
 	runtimeOnly "com.h2database:h2"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of("${javaVersion}")
+    }
 }
 
 // The line below adds the generated sources as a java source folder, in the IDE
@@ -46,15 +51,9 @@ generateServerCodeConf {
 	packageName = 'org.forum.server.graphql'	
 	scanBasePackages = 'org.forum.server.impl, org.forum.server.jpa'
 	schemaPersonalizationFile = 'src/main/graphql/forum_personalization.json'
-	useJakartaEE9 = true
 	customScalars = [ [
 			graphQLTypeName: "Date",
 			javaType: "java.util.Date",
 			graphQLScalarTypeStaticField: "com.graphql_java_generator.customscalars.GraphQLScalarTypeDate.Date"
 	] ]
-
-	// The parameters below are mandatory for 2.0RC1. These parameters will disappear in 2.0, and these values will be forced
-	copyRuntimeSources = false
-	generateBatchLoaderEnvironment = true
-	separateUtilityClasses = true
 }
