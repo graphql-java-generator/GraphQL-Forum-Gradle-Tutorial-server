@@ -39,10 +39,12 @@ java {
         languageVersion = JavaLanguageVersion.of("${javaVersion}")
     }
 }
-
-// The line below adds the generated sources as a java source folder, in the IDE
-sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlGradlePlugin'
-sourceSets.main.resources.srcDirs += '/build/generated/resources/graphqlGradlePlugin'
+compileJava {
+    options.encoding = "UTF-8"
+    // Below options allow to check that the generated code generates no warning
+	options.compilerArgs << "-Xlint:all"
+	options.compilerArgs << "-Werror"
+}
 
 // Let's configure the GraphQL Gradle Plugin:
 // All available parameters are described here: 
